@@ -1,0 +1,14 @@
+# Write your MySQL query statement below
+
+
+SELECT DISTINCT 
+    cast((COUNT(a.DIFFERENCE)/(select count(distinct player_id) from Activity))
+        as decimal (10,2)) as fraction
+    FROM
+    (SELECT 
+        player_id,
+        event_date - LEAD(event_date) OVER (ORDER BY player_id, event_date) AS difference,
+        row_number() over(PARTITION BY PLAYER_ID ORDER BY player_id) as rn
+        FROM
+        Activity) as a
+        where (DIFFERENCE = -1 or (DIFFERENCE = -72 and month(event_date) = 2)) and rn = 1
